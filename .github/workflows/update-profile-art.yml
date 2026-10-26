@@ -1,0 +1,30 @@
+name: Update profile art
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "scripts/**"
+      - ".github/workflows/update-profile-art.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  profile-art:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r scripts/requirements.txt
+      - run: python scripts/profile_art.py
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: refresh animated profile art [skip ci]"
+          file_pattern: "data/contributions.json contrib-heatmap.svg ascii-portrait.svg info-card.svg"
